@@ -7,7 +7,6 @@ import com.aigame.Controller.AppController;
 import com.aigame.SqlHandling.SqlQueryPerformer;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,29 +25,29 @@ public class LobbyPage {
     private GridPane view;
     private AppController appController;
     private SqlQueryPerformer sqlQueryPerformer;
-    private int avtarcount,totalPlay,total_win,total_loss,avtar_unlocked,avtar_inUse;float money;String name;
+    private int avtarcount, totalPlay, total_win, total_loss, avtar_unlocked, avtar_inUse;
+    private float money;
+    private String name;
 
-
-    public LobbyPage(AppController appController){
-        this.appController=appController;
+    public LobbyPage(AppController appController) {
+        this.appController = appController;
     }
 
     private void initialize(String phone) {
-        this.sqlQueryPerformer=sqlQueryPerformer;
-        this.view=new GridPane();
-        ResultSet playerData=sqlQueryPerformer.getPlayerData(phone);
+        this.view = new GridPane();
+        ResultSet playerData = sqlQueryPerformer.getPlayerData(phone);
         try {
             playerData.next();
-             totalPlay=playerData.getInt("total_play");
-             total_win=playerData.getInt("total_win");
-             total_loss=playerData.getInt("total_loss");
-             money=playerData.getFloat("money");
-            avtar_unlocked=playerData.getInt("avtar_unlock");
-             name=playerData.getString("name");
+            totalPlay = playerData.getInt("total_play");
+            total_win = playerData.getInt("total_win");
+            total_loss = playerData.getInt("total_loss");
+            money = playerData.getFloat("money");
+            avtar_unlocked = playerData.getInt("avtar_unlock");
+            name = playerData.getString("name");
 
         } catch (SQLException e) {
-           System.out.println("Error in the initialization of the retriving data from table:");
-           System.out.println(e.getMessage());
+            System.out.println("Error in the initialization of the retriving data from table:");
+            System.out.println(e.getMessage());
         }
 
         view = new GridPane();
@@ -69,8 +68,8 @@ public class LobbyPage {
         view.setStyle("-fx-background-color: rgb(43, 42, 46);");
     }
 
-    public GridPane getView(String id,SqlQueryPerformer sqlQueryPerformer) {
-        this.sqlQueryPerformer=sqlQueryPerformer;
+    public GridPane getView(String id, SqlQueryPerformer sqlQueryPerformer) {
+        this.sqlQueryPerformer = sqlQueryPerformer;
         initialize(id);
         return view;
     }
@@ -126,7 +125,7 @@ public class LobbyPage {
         return vBox;
     }
 
-        private VBox getAvtarBox() {
+    private VBox getAvtarBox() {
 
         Label avtarLable = new Label("AVTARS");
         avtarLable.setStyle(" -fx-background-color:rgb(182, 128, 113);" +
@@ -138,25 +137,22 @@ public class LobbyPage {
                 "-fx-border-width: 2px;" +
                 "-fx-text-fill: golden;");
 
-         avtarcount=1;
-        Image avtarImage = new Image("/Images/Avtar/Avtarno"+avtarcount+".jpg");
-        ImageView imageView = new ImageView(avtarImage);
+        avtarcount = 0;
+        ImageView imageView = new ImageView();
         imageView.setFitHeight(400);
         imageView.setFitWidth(400);
 
-        // Clip image to rounded corners
         Rectangle clip = new Rectangle(400, 400);
         clip.setArcWidth(60);
         clip.setArcHeight(60);
         imageView.setClip(clip);
 
         VBox imageContainer = new VBox(imageView);
-        imageContainer.setPadding(new Insets(3)); // Space to show border
+        imageContainer.setPadding(new Insets(3));
 
         Button leftArrow = new Button("➤");
         Button rightArrow = new Button("➤");
 
-        // Flip the left arrow using CSS transform
         leftArrow.setStyle(
                 " -fx-font-size: 36px;" +
                         "-fx-background-color: #444;" +
@@ -164,18 +160,6 @@ public class LobbyPage {
                         "-fx-background-radius: 50;" +
                         "-fx-cursor: hand;" +
                         "-fx-rotate: 180;");
-        leftArrow.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-              avtarcount--;
-              if(avtarcount<1)avtarcount=3;
-              if(avtarcount>avtar_unlocked){
-                
-              }
-            }
-            
-        });
 
         rightArrow.setStyle(
                 " -fx-font-size: 36px;" +
@@ -183,17 +167,17 @@ public class LobbyPage {
                         "-fx-text-fill: white;" +
                         "-fx-cursor: hand;" +
                         "-fx-background-radius: 50;");
-          rightArrow.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              avtarcount++;
-              if(avtarcount<1)avtarcount=3;
-            }
-        });
 
-
-        HBox avtarImageBox = new HBox(30, leftArrow, imageView, rightArrow);
-        avtarImageBox.setAlignment(Pos.CENTER);
+        Button buyButton = new Button("Buy");
+        buyButton.setStyle(
+                "-fx-font-size: 16px;" +
+                        "-fx-font-size: 30px;" +
+                        "-fx-background-color: rgb(56, 146, 33);" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-padding: 5 15 5 15;" +
+                        "-fx-content-display: LEFT;" +
+                        "-fx-alignment: CENTER;");
 
         Button equipButton = new Button("Equap");
         equipButton.setStyle(
@@ -206,33 +190,38 @@ public class LobbyPage {
                         "-fx-content-display: LEFT;" +
                         "-fx-alignment: CENTER;");
 
-        avtar_inUse=avtarcount;
-        equipButton.setOnAction(new EventHandler<ActionEvent>() {
+        HBox buttonBox = new HBox(30, equipButton);
+        buttonBox.setAlignment(Pos.CENTER);
 
-            @Override
-            public void handle(ActionEvent event) {
-               avtar_inUse=avtarcount;
+        Runnable updateUI = () -> {
+            imageView.setImage(new Image("/Images/Avtar/Avtarno" + avtarcount + ".jpg"));
+            if (avtarcount > avtar_unlocked) {
+                    buttonBox.getChildren().add(0, buyButton); 
+            } else {
+                buttonBox.getChildren().remove(buyButton);
             }
-            
+        };
+
+        updateUI.run();
+
+        leftArrow.setOnAction((ActionEvent e) -> {
+            avtarcount--;
+            if (avtarcount < 0) avtarcount = 2;
+            updateUI.run();
         });
 
-        HBox buttonBox = new HBox(30);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().add(equipButton);
+        rightArrow.setOnAction((ActionEvent e) -> {
+            avtarcount++;
+            if (avtarcount > 2) avtarcount = 0;
+            updateUI.run();
+        });
 
-        if(avtarcount>avtar_unlocked){
-                Button buyButton = new Button("Buy");
-        buyButton.setStyle(
-                "-fx-font-size: 16px;" +
-                        "-fx-font-size: 30px;" +
-                        "-fx-background-color: rgb(56, 146, 33);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-background-radius: 15;" +
-                        "-fx-padding: 5 15 5 15;" +
-                        "-fx-content-display: LEFT;" +
-                        "-fx-alignment: CENTER;");
-            buttonBox.getChildren().add(buyButton);
-        }
+        equipButton.setOnAction((ActionEvent e) -> {
+            avtar_inUse = avtarcount;
+        });
+
+        HBox avtarImageBox = new HBox(30, leftArrow, imageView, rightArrow);
+        avtarImageBox.setAlignment(Pos.CENTER);
 
         VBox avtarBox = new VBox(30, avtarLable, avtarImageBox, buttonBox);
         avtarBox.setAlignment(Pos.CENTER);
