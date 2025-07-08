@@ -1,9 +1,9 @@
 package com.aigame.Controller;
 
 import java.net.URL;
-import java.sql.SQLPermission;
 
 import com.aigame.AboutUs.AboutUsPage;
+import com.aigame.GamePages.LobbyDomy;
 import com.aigame.GamePages.LobbyPage;
 import com.aigame.HomePage.HelpPage;
 import com.aigame.HomePage.HomePage;
@@ -28,9 +28,10 @@ public class AppController extends Application {
     private LoginPage loginPage;
     private SignUpPage signUpPage;
     private LobbyPage lobbyPage;
+    private LobbyDomy lobbyDomyPage;
 
     //These are the Scenes of classes
-    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene;
+    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,lobbyDomyPageScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -41,6 +42,7 @@ public class AppController extends Application {
         loginPage=new LoginPage(this);
         signUpPage=new SignUpPage(this);
         lobbyPage=new LobbyPage(this);
+        lobbyDomyPage=new LobbyDomy(this);
         
         //---------------------------------------------------------------
         // ADDing Audio in Game
@@ -60,9 +62,10 @@ public class AppController extends Application {
         helpPageScene=new Scene(helpPage.getView(),1300,750);
         loginPageScene=new Scene(loginPage.getView(),1300,750);
         signUpPageScene=new Scene(signUpPage.getView(),1300,750);
+        lobbyDomyPageScene=new Scene(lobbyDomyPage.getView(),1300,750);
 
-        primaryStage.setTitle("Wumpus World Agent GAme");
-        navigateToLobbyPage(null, null);
+        primaryStage.setTitle("Wumpus World Agent Game");
+        primaryStage.setScene(loginPageScene);
         primaryStage.show();
     }
 

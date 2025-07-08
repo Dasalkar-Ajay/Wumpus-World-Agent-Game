@@ -93,7 +93,6 @@ public class SqlQueryPerformer {
 
    public ResultSet getPlayerData(String phone) {
      String selectQuery = "SELECT * FROM Avtar WHERE  phone= '" +phone + "'";
-        ResultSet result;
         try {
            return statement.executeQuery(selectQuery);
         } catch (SQLException e) {
