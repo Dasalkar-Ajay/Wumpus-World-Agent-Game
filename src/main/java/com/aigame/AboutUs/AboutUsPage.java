@@ -1,8 +1,10 @@
 package com.aigame.AboutUs;
 
 import com.aigame.Controller.AppController;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -32,6 +34,15 @@ public class AboutUsPage {
         description.setStyle("-fx-font-size: 20px; -fx-text-fill: gold;");
 
         Button backButton=new Button("Back");
+        backButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+               appController.navigateToHomePage();
+            }
+            
+        });
+
 
         view.add(description, 0, 0);
         view.add(backButton, 1, 1);

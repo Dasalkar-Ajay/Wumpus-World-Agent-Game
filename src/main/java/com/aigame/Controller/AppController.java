@@ -1,9 +1,15 @@
 package com.aigame.Controller;
 
 import java.net.URL;
+import java.sql.SQLPermission;
 
 import com.aigame.AboutUs.AboutUsPage;
+import com.aigame.GamePages.LobbyPage;
+import com.aigame.HomePage.HelpPage;
 import com.aigame.HomePage.HomePage;
+import com.aigame.Login_SignUp.LoginPage;
+import com.aigame.Login_SignUp.SignUpPage;
+import com.aigame.SqlHandling.SqlQueryPerformer;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -13,37 +19,76 @@ import javafx.stage.Stage;
 
 
 public class AppController extends Application {
-
+    // These are the Instances of the classses
     private Stage primaryStage;
-    private Scene homePageScene, aboutUsPageScene;
-
     private HomePage homePage;
     private AboutUsPage aboutUsPage;
-
-    // ADD THIS FIELD TO KEEP A STRONG REFERENCE
     private MediaPlayer mediaPlayer;
+    private HelpPage helpPage;
+    private LoginPage loginPage;
+    private SignUpPage signUpPage;
+    private LobbyPage lobbyPage;
+
+    //These are the Scenes of classes
+    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         homePage = new HomePage(this);
         aboutUsPage = new AboutUsPage(this);
-
+        helpPage=new HelpPage(this);
+        loginPage=new LoginPage(this);
+        signUpPage=new SignUpPage(this);
+        lobbyPage=new LobbyPage(this);
+        
+        //---------------------------------------------------------------
+        // ADDing Audio in Game
         URL resource = getClass().getResource("/Audio/scary(chosic.com).mp3");
         if (resource == null) {
             System.err.println("Audio file not found!");
             return;
         }
         Media media = new Media(resource.toURI().toString());
-
-
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); 
-        mediaPlayer.play();
+        // mediaPlayer.play();
+        // ----------------------------------------------------------------
 
-        aboutUsPageScene = new Scene(aboutUsPage.getView(), 1000, 730, true);
-        primaryStage.setTitle("AboutUs Page");
-        primaryStage.setScene(aboutUsPageScene);
+        homePageScene=new Scene(homePage.getView(),1300,750);
+        aboutUsPageScene = new Scene(aboutUsPage.getView(),1300,750);
+        helpPageScene=new Scene(helpPage.getView(),1300,750);
+        loginPageScene=new Scene(loginPage.getView(),1300,750);
+        signUpPageScene=new Scene(signUpPage.getView(),1300,750);
+
+        primaryStage.setTitle("Wumpus World Agent GAme");
+        navigateToLobbyPage(null, null);
         primaryStage.show();
+    }
+
+    public void navigateToHomePage(){
+        primaryStage.setScene(homePageScene);
+    }
+    
+    public void navigateToAboutUsPage(){
+        primaryStage.setScene(aboutUsPageScene);
+    }
+
+    public void navigateToHelpPage(){
+        primaryStage.setScene(helpPageScene);
+    }
+
+    public void navigateToLoginPage(){
+        primaryStage.setScene(loginPageScene);
+    }
+
+    public void navigateToSignUpPage(){
+        primaryStage.setScene(signUpPageScene);
+    }
+
+
+    public void navigateToLobbyPage(String id, SqlQueryPerformer sqlQueryPerformer) {
+         lobbyPageScene=new Scene(lobbyPage.getView(id,sqlQueryPerformer),1300,750);
+        primaryStage.setScene(lobbyPageScene);
     }
 }
