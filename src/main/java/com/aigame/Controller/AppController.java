@@ -3,7 +3,6 @@ package com.aigame.Controller;
 import java.net.URL;
 
 import com.aigame.AboutUs.AboutUsPage;
-import com.aigame.GamePages.LobbyDomy;
 import com.aigame.GamePages.LobbyPage;
 import com.aigame.HomePage.HelpPage;
 import com.aigame.HomePage.HomePage;
@@ -28,7 +27,6 @@ public class AppController extends Application {
     private LoginPage loginPage;
     private SignUpPage signUpPage;
     private LobbyPage lobbyPage;
-    private LobbyDomy lobbyDomyPage;
 
     //These are the Scenes of classes
     private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,lobbyDomyPageScene;
@@ -42,7 +40,6 @@ public class AppController extends Application {
         loginPage=new LoginPage(this);
         signUpPage=new SignUpPage(this);
         lobbyPage=new LobbyPage(this);
-        lobbyDomyPage=new LobbyDomy(this);
         
         //---------------------------------------------------------------
         // ADDing Audio in Game
@@ -54,7 +51,7 @@ public class AppController extends Application {
         Media media = new Media(resource.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); 
-        // mediaPlayer.play();
+        mediaPlayer.play();
         // ----------------------------------------------------------------
 
         homePageScene=new Scene(homePage.getView(),1300,750);
@@ -62,10 +59,9 @@ public class AppController extends Application {
         helpPageScene=new Scene(helpPage.getView(),1300,750);
         loginPageScene=new Scene(loginPage.getView(),1300,750);
         signUpPageScene=new Scene(signUpPage.getView(),1300,750);
-        lobbyDomyPageScene=new Scene(lobbyDomyPage.getView(),1300,750);
 
         primaryStage.setTitle("Wumpus World Agent Game");
-        primaryStage.setScene(loginPageScene);
+        primaryStage.setScene(homePageScene);
         primaryStage.show();
     }
 
@@ -93,5 +89,18 @@ public class AppController extends Application {
     public void navigateToLobbyPage(String id, SqlQueryPerformer sqlQueryPerformer) {
          lobbyPageScene=new Scene(lobbyPage.getView(id,sqlQueryPerformer),1300,750);
         primaryStage.setScene(lobbyPageScene);
+    }
+
+    public void navigateToPlayPage() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'navigateToPlayPage'");
+    }
+
+    public void controllSetting(String value){
+        if(value.equals("stop")){
+            mediaPlayer.stop();
+        }else{
+            mediaPlayer.play();
+        }
     }
 }

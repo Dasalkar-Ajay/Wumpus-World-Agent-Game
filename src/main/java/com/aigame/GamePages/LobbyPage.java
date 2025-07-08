@@ -7,10 +7,13 @@ import com.aigame.Controller.AppController;
 import com.aigame.SqlHandling.SqlQueryPerformer;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -27,13 +30,14 @@ public class LobbyPage {
     private SqlQueryPerformer sqlQueryPerformer;
     private int avtarcount, totalPlay, total_win, total_loss, avtar_unlocked, avtar_inUse;
     private float money;
-    private String name;
+    private String name,phone;
 
     public LobbyPage(AppController appController) {
         this.appController = appController;
     }
 
     private void initialize(String phone) {
+        this.phone=phone;
         this.view = new GridPane();
         ResultSet playerData = sqlQueryPerformer.getPlayerData(phone);
         try {
@@ -98,8 +102,18 @@ public class LobbyPage {
                         "-fx-content-display: LEFT;" +
                         "-fx-alignment: CENTER_LEFT;");
 
+        profileButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ProfileSetting.showProfile(name, totalPlay, total_win, total_loss, money);
+            }
+        });
+
         Button settingButton = new Button();
         settingButton.setGraphic(settinImageView);
+        settingButton.setOnAction((ActionEvent e) -> {
+            ProfileSetting.getSetting(appController);
+        });
 
         Button playButton = new Button("Play");
         playButton.setPrefSize(150, 50);
@@ -111,6 +125,9 @@ public class LobbyPage {
                         "-fx-background-radius: 15;" +
                         "-fx-padding: 5 15 5 15;" +
                         "-fx-alignment: CENTER;");
+        playButton.setOnAction((ActionEvent e) -> {
+         appController.navigateToPlayPage();
+        });
 
         VBox profilesettingBox = new VBox(30, profileButton, settingButton);
         profilesettingBox.setAlignment(Pos.TOP_RIGHT);
@@ -168,7 +185,7 @@ public class LobbyPage {
                         "-fx-cursor: hand;" +
                         "-fx-background-radius: 50;");
 
-        Button buyButton = new Button("Buy");
+        Button buyButton = new Button("Buy 10000");
         buyButton.setStyle(
                 "-fx-font-size: 16px;" +
                         "-fx-font-size: 30px;" +
@@ -178,6 +195,17 @@ public class LobbyPage {
                         "-fx-padding: 5 15 5 15;" +
                         "-fx-content-display: LEFT;" +
                         "-fx-alignment: CENTER;");
+
+        buyButton.setOnAction((ActionEvent e) -> {
+          if(money>=1000){
+              avtar_unlocked++;
+            sqlQueryPerformer.getBuy(name,phone,avtar_unlocked);
+          }else{
+            Alert alert=new Alert(AlertType.INFORMATION);
+            alert.setContentText("Not Enough Money!!");
+            alert.show();
+          }
+        });
 
         Button equipButton = new Button("Equap");
         equipButton.setStyle(
@@ -189,16 +217,21 @@ public class LobbyPage {
                         "-fx-padding: 5 15 5 15;" +
                         "-fx-content-display: LEFT;" +
                         "-fx-alignment: CENTER;");
+    
 
-        HBox buttonBox = new HBox(30, equipButton);
+        HBox buttonBox = new HBox(30);
         buttonBox.setAlignment(Pos.CENTER);
 
         Runnable updateUI = () -> {
             imageView.setImage(new Image("/Images/Avtar/Avtarno" + avtarcount + ".jpg"));
             if (avtarcount > avtar_unlocked) {
-                    buttonBox.getChildren().add(0, buyButton); 
+                    buttonBox.getChildren().add( buyButton);
+                    buttonBox.getChildren().remove(equipButton); 
             } else {
                 buttonBox.getChildren().remove(buyButton);
+                if(avtar_inUse==avtarcount)equipButton.setText("Equiped");
+                else equipButton.setText("Equip");
+                buttonBox.getChildren().add(equipButton);
             }
         };
 

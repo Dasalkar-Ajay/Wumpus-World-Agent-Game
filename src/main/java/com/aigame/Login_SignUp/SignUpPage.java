@@ -77,9 +77,7 @@ public class SignUpPage {
                     alertnotFill.show();
                     signUpIdField.clear();
                     passwordField.clear();
-                }
-
-                if(sqlQueryPerformer.isIdPresent(id)){
+                }else if(sqlQueryPerformer.isIdPresent(id)){
                     Alert alertnotFill=new Alert(AlertType.INFORMATION);
                     alertnotFill.setTitle("Already person Present at these Id");
                     alertnotFill.setContentText("Please Try With Diff Phone No or Email");

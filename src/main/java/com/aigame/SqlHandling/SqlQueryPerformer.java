@@ -100,4 +100,13 @@ public class SqlQueryPerformer {
           throw new RuntimeException("IN SQLQueryPerformer GetPlayerDAta Function");
         }
    }
+
+   public void getBuy(String name, String phone,int avtar_unlocked) {
+    String query = "UPDATE avtar SET avtar_count = " + avtar_unlocked + " WHERE name = '" + phone + "'";
+    try{
+        statement.executeUpdate(query);
+    }catch(Exception e){
+        System.out.println("error in getBuy SqlQueryPerformer");
+    }
+   }
 }
