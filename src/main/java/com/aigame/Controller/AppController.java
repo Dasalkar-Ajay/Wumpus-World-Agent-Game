@@ -8,6 +8,7 @@ import com.aigame.HomePage.HelpPage;
 import com.aigame.HomePage.HomePage;
 import com.aigame.Login_SignUp.LoginPage;
 import com.aigame.Login_SignUp.SignUpPage;
+import com.aigame.PlayAsGuest.PlayAsGuest;
 import com.aigame.SqlHandling.SqlQueryPerformer;
 
 import javafx.application.Application;
@@ -27,9 +28,10 @@ public class AppController extends Application {
     private LoginPage loginPage;
     private SignUpPage signUpPage;
     private LobbyPage lobbyPage;
+    private PlayAsGuest playAsGuest;
 
     //These are the Scenes of classes
-    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,lobbyDomyPageScene;
+    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,playAsGuestScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -40,6 +42,7 @@ public class AppController extends Application {
         loginPage=new LoginPage(this);
         signUpPage=new SignUpPage(this);
         lobbyPage=new LobbyPage(this);
+        playAsGuest=new PlayAsGuest(this);
         
         //---------------------------------------------------------------
         // ADDing Audio in Game
@@ -51,7 +54,7 @@ public class AppController extends Application {
         Media media = new Media(resource.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); 
-        mediaPlayer.play();
+        // mediaPlayer.play();
         // ----------------------------------------------------------------
 
         homePageScene=new Scene(homePage.getView(),1300,750);
@@ -59,10 +62,18 @@ public class AppController extends Application {
         helpPageScene=new Scene(helpPage.getView(),1300,750);
         loginPageScene=new Scene(loginPage.getView(),1300,750);
         signUpPageScene=new Scene(signUpPage.getView(),1300,750);
+        playAsGuestScene=new Scene(playAsGuest.getView(),1300,750);
 
         primaryStage.setTitle("Wumpus World Agent Game");
-        primaryStage.setScene(homePageScene);
+        primaryStage.setScene(playAsGuestScene);
         primaryStage.show();
+    }
+     public void controllSetting(String value){
+        if(value.equals("stop")){
+            mediaPlayer.stop();
+        }else{
+            mediaPlayer.play();
+        }
     }
 
     public void navigateToHomePage(){
@@ -84,8 +95,7 @@ public class AppController extends Application {
     public void navigateToSignUpPage(){
         primaryStage.setScene(signUpPageScene);
     }
-
-
+    
     public void navigateToLobbyPage(String id, SqlQueryPerformer sqlQueryPerformer) {
          lobbyPageScene=new Scene(lobbyPage.getView(id,sqlQueryPerformer),1300,750);
         primaryStage.setScene(lobbyPageScene);
@@ -94,13 +104,5 @@ public class AppController extends Application {
     public void navigateToPlayPage() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'navigateToPlayPage'");
-    }
-
-    public void controllSetting(String value){
-        if(value.equals("stop")){
-            mediaPlayer.stop();
-        }else{
-            mediaPlayer.play();
-        }
     }
 }

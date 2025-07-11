@@ -2,6 +2,7 @@ package com.aigame.GamePages;
 
 import com.aigame.Controller.AppController;
 
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -11,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class ProfileSetting {
    
@@ -31,6 +33,9 @@ public class ProfileSetting {
         primaryStage.setTitle("Player Profile");
         primaryStage.setScene(scene);
         primaryStage.show();
+        PauseTransition delay = new PauseTransition(Duration.seconds(5));
+        delay.setOnFinished(event -> primaryStage.close());
+        delay.play();
     }
 
     public static void  getSetting(AppController appController){
@@ -67,6 +72,10 @@ public class ProfileSetting {
         primaryStage.setTitle("Settings Profile");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(5));
+        delay.setOnFinished(event -> primaryStage.close());
+        delay.play();
     }
 
 }
