@@ -17,15 +17,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class PlayAsGuest {
+public class PlayAsGuest extends Play{
     private Maps maps;
-    private final int SIZE = 5;
     private String[][] finalmap;
     private String[][] map = new String[SIZE][SIZE];
     private BorderPane view;
-    private final int CELL_SIZE = 120;
-    private int agentRow = 4;
-    private int agentCol = 0;
     private AppController appController;
     private GridPane board = new GridPane();
 
@@ -41,9 +37,21 @@ public class PlayAsGuest {
 
     private void initialize() {
         view = new BorderPane();
-        drawBoard();
+        drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
         view.setLeft(board);
 
+
+        HBox directionBox = getDirection();
+
+        VBox controlVBox=new VBox();
+        controlVBox.getChildren().add(directionBox);
+        controlVBox.setAlignment(Pos.CENTER);
+        directionBox.setPadding(new Insets(50));
+        view.setRight(controlVBox);
+
+    }
+
+    private HBox getDirection(){
         Button upBtn = new Button("↑");
         upBtn.setPrefSize(80, 50);
         Button downBtn = new Button("↓");
@@ -53,46 +61,72 @@ public class PlayAsGuest {
         Button rightBtn = new Button("→");
         rightBtn.setPrefSize(80, 50);
 
-        HBox middleRow = new HBox(15, leftBtn, downBtn, rightBtn,upBtn);
+         upBtn.setOnAction(e -> handleMove("UP"));
+        downBtn.setOnAction(e -> handleMove("DOWN"));
+        leftBtn.setOnAction(e -> handleMove("LEFT"));
+        rightBtn.setOnAction(e -> handleMove("RIGHT"));
 
-        VBox controlVBox=new VBox();
-        controlVBox.getChildren().add(middleRow);
-        controlVBox.setAlignment(Pos.CENTER);
-        middleRow.setPadding(new Insets(50));
-        view.setRight(controlVBox);
-
+        HBox directionBox = new HBox(15, leftBtn, downBtn, rightBtn,upBtn);
+        return directionBox;
     }
 
-    private void drawBoard() {
-        board.getChildren().clear();
-        board.setAlignment(Pos.CENTER);
-        board.setGridLinesVisible(true);
+    private void handleMove(String string) {
+       int newRow = agentRow;
+        int newCol = agentCol;
 
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
-                if (map[row][col].equals("A")) {
-                    Image image = new Image("/Images/Avtar/Avtarno0.jpg");
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitHeight(80);
-                    imageView.setFitWidth(80);
-                    StackPane stackPane = new StackPane();
-                    stackPane.setPrefSize(CELL_SIZE, CELL_SIZE);
-                    stackPane.setStyle("-fx-border-color: black; -fx-background-color: " + "#fefae0");
-                    stackPane.getChildren().add(imageView);
-                    board.add(stackPane, col, row);
-                } else {
-                    Label label = new Label("");
-                    label.setPrefSize(CELL_SIZE, CELL_SIZE);
-                    label.setAlignment(Pos.CENTER);
-                    label.setStyle("-fx-border-color: black; -fx-background-color: " + "#fefae0");
-                    board.add(label, col, row);
-                }
-                board.setPadding(new Insets(20));
-            }
+         switch (string) {
+            case "UP":
+                newRow--;
+                break;
+            case "DOWN":
+                newRow++;
+                break;
+            case "LEFT":
+                newCol--;
+                break;
+            case "RIGHT":
+                newCol++;
+                break;
+            default:
+                return;
         }
+
+        if (isInBounds(newRow, newCol)) {
+            String destination = map[newRow][newCol];
+
+            if (destination.equals("P")) {
+                showMessage("You fell into a pit! Game Over.", Alert.AlertType.ERROR);
+                resetGame();
+            } else if (destination.equals("W")) {
+                showMessage("Wumpus ate you! Game Over.", Alert.AlertType.ERROR);
+                resetGame();
+            } else if (destination.equals("G")) {
+                showMessage("You found the GOLD! You Win!", Alert.AlertType.INFORMATION);
+                resetGame();
+            } else {
+                map[agentRow][agentCol] = ".";
+                agentRow = newRow;
+                agentCol = newCol;
+                map[agentRow][agentCol] = "A";
+                drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
+            }
+        }else{
+            showMessage("You Bumped to the Wall !!", Alert.AlertType.INFORMATION);
+                resetGame();
+        }
+    }
+
+     private void resetGame() {
+        for (int r = 0; r < SIZE; r++) {
+            System.arraycopy(finalmap[r], 0, map[r], 0, SIZE);
+        }
+        agentRow = 4;
+        agentCol = 0;
+        drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
     }
 
     public BorderPane getView() {
         return view;
     }
+
 }
