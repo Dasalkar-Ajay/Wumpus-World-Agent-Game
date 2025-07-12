@@ -3,16 +3,16 @@ package com.aigame.Maps;
 import java.util.Random;
 
 public class Maps {
-    public String[][] getmap(String value) {
+    public String[][] getmap(int value) {
 
-     final String[][] simple = {
+        String[][] simple = {
                 { "B", "", "B", "", "" },
                 { "P", "BS", "P", "B", "" },
                 { "BS", "W", "BS", "", "" },
                 { "", "S", "", "B", "G" },
                 { "A", "", "B", "P", "B" } };
 
-       final String [][] medium={
+        String [][] medium={
             {"","BS","P","B",""},
             {"BS","W","BS","",""},
             {"P","BS","P","G",""},
@@ -20,7 +20,7 @@ public class Maps {
             {"A","B","P","B",""}
         };
 
-     final String[][] risky={
+        String[][] risky={
             {"","BS","P","B",""},
             {"BS","W","BS","",""},
             {"P","BS","P","G",""},
@@ -29,11 +29,11 @@ public class Maps {
         };
 
         switch (value) {
-            case "simple":
+            case 0:
                 return simple;
-            case "medium":
+            case 1:
                 return medium;
-            case "risky":
+            case 2:
                 return risky;
             default:{
                 Random random=new Random();

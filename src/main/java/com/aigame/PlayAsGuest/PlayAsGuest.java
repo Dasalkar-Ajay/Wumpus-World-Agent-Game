@@ -32,7 +32,7 @@ public class PlayAsGuest {
     public PlayAsGuest(AppController appController) {
         this.appController = appController;
         maps = new Maps();
-        finalmap = maps.getmap("");
+        finalmap = maps.getmap(3);
         for (int r = 0; r < SIZE; r++) {
             System.arraycopy(finalmap[r], 0, map[r], 0, SIZE);
         }
@@ -43,6 +43,24 @@ public class PlayAsGuest {
         view = new BorderPane();
         drawBoard();
         view.setLeft(board);
+
+        Button upBtn = new Button("↑");
+        upBtn.setPrefSize(80, 50);
+        Button downBtn = new Button("↓");
+        downBtn.setPrefSize(80, 50);
+        Button leftBtn = new Button("←");
+       leftBtn.setPrefSize(80, 50);
+        Button rightBtn = new Button("→");
+        rightBtn.setPrefSize(80, 50);
+
+        HBox middleRow = new HBox(15, leftBtn, downBtn, rightBtn,upBtn);
+
+        VBox controlVBox=new VBox();
+        controlVBox.getChildren().add(middleRow);
+        controlVBox.setAlignment(Pos.CENTER);
+        middleRow.setPadding(new Insets(50));
+        view.setRight(controlVBox);
+
     }
 
     private void drawBoard() {
