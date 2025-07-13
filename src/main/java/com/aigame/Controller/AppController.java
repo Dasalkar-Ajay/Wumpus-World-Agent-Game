@@ -23,7 +23,7 @@ public class AppController extends Application {
     private Stage primaryStage;
     private HomePage homePage;
     private AboutUsPage aboutUsPage;
-    private MediaPlayer mediaPlayer;
+    public MediaPlayer mediaPlayer;
     private HelpPage helpPage;
     private LoginPage loginPage;
     private SignUpPage signUpPage;
@@ -44,8 +44,6 @@ public class AppController extends Application {
         lobbyPage=new LobbyPage(this);
         playAsGuest=new PlayAsGuest(this);
         
-        //---------------------------------------------------------------
-        // ADDing Audio in Game
         URL resource = getClass().getResource("/Audio/scary(chosic.com).mp3");
         if (resource == null) {
             System.err.println("Audio file not found!");
@@ -55,6 +53,9 @@ public class AppController extends Application {
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); 
         // mediaPlayer.play();
+
+        //---------------------------------------------------------------
+        // ADDing Audio in Game
         // ----------------------------------------------------------------
 
         homePageScene=new Scene(homePage.getView(),1300,750);

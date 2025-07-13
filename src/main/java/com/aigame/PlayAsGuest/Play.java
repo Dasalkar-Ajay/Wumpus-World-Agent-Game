@@ -1,31 +1,48 @@
 package com.aigame.PlayAsGuest;
 
+import java.net.URL;
+import java.util.Optional;
+
+import com.aigame.Controller.AppController;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 
 public class Play {
     public final int SIZE = 5;
     public final int CELL_SIZE = 120;
     public int agentRow = 4;
     public int agentCol = 0;
+    public AppController appController;
+    public MediaPlayer mediaPlayer;
 
     public final String getColor(String cell) {
         switch (cell) {
-            case "S" :return "#0b6710ff";
-            case "B":return "#194591ff";
-            case "BS":return "#1b797eff";
-            case "G":return "#ecb532ff";
-            default :return "#a4cff2ff";
+            case "S":
+                return "#0b6710ff";
+            case "B":
+                return "#194591ff";
+            case "BS":
+                return "#1b797eff";
+            case "G":
+                return "#ecb532ff";
+            default:
+                return "#a4cff2ff";
         }
     }
 
-     public final boolean isInBounds(int row, int col) {
+    public final boolean isInBounds(int row, int col) {
         return row >= 0 && row < SIZE && col >= 0 && col < SIZE;
     }
 
@@ -37,7 +54,7 @@ public class Play {
         alert.showAndWait();
     }
 
-       public final void drawBoard(GridPane board,String[][]map,String[][] finalmap,String imageUrl) {
+    public final void drawBoard(GridPane board, String[][] map, String[][] finalmap, String imageUrl) {
         board.getChildren().clear();
         board.setAlignment(Pos.CENTER);
         board.setGridLinesVisible(true);
@@ -51,7 +68,9 @@ public class Play {
                     imageView.setFitWidth(80);
                     StackPane stackPane = new StackPane();
                     stackPane.setPrefSize(CELL_SIZE, CELL_SIZE);
-                    stackPane.setStyle("-fx-border-color: black; -fx-background-color: " + getColor(finalmap[agentRow][agentCol]));
+                    stackPane.setStyle(
+                            "-fx-border-color: black; -fx-background-color: " + getColor(finalmap[agentRow][agentCol]));
+                    setAgentbackgroundSound(finalmap);
                     stackPane.getChildren().add(imageView);
                     board.add(stackPane, col, row);
                 } else {
@@ -65,4 +84,71 @@ public class Play {
             }
         }
     }
+
+    private void setAgentbackgroundSound(String[][] finalmap) {
+        String back=finalmap[agentRow][agentCol];
+        switch (back) {
+            case "S":
+                sound("/Audio/WumpusSound.mp3");
+                break;
+            case "B":
+                 sound("/Audio/breeze.mp3");
+                break;
+            case "BS":
+                 sound("/Audio/WumpusSound.mp3");
+                break;
+        }
+    }
+
+    public final void sound(String url) {
+        URL resource = getClass().getResource(url);
+        if (resource == null) {
+            System.err.println("Audio file not found!");
+            return;
+        }
+        try{
+            Media media = new Media(resource.toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.play();
+        }catch(Exception exception){
+            throw new RuntimeException(exception.getMessage()+"In the Play.java sound function");
+        }
+    }
+    public void win(){
+       
+    }
+    public boolean playingWill(){
+        Alert alert=new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Congratulatins!");
+        alert.setHeaderText("Did you want to play agian");
+        alert.setContentText("wanted to continue press Ok");
+        if(alert.showAndWait().get()==ButtonType.OK){
+            return true;
+        }
+        return false;
+    }
+
+    public int[] shoot(){
+            Alert alert=new Alert(AlertType.CONFIRMATION);
+            alert.setHeaderText("Choose Direction!");
+            alert.setContentText("Conferm where have to shoot:");
+            ButtonType up=new ButtonType("↑");
+            ButtonType down=new ButtonType("↓");
+            ButtonType left=new ButtonType("←");
+            ButtonType right=new ButtonType("→");
+            ButtonType cancle=new ButtonType("Cancle");
+            alert.getButtonTypes().setAll(up,down,left,right,cancle);
+            Optional<ButtonType> result=alert.showAndWait();
+            if(result.get()==up){
+
+            }else if(result.get()==down){
+
+            }else if(result.get()==left){
+
+            }else if(result.get()==right){
+                
+            }
+            return null;
+    }
 }
+
