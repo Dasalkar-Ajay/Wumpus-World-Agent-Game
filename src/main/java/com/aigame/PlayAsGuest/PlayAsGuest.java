@@ -1,17 +1,19 @@
 package com.aigame.PlayAsGuest;
 
-
 import com.aigame.Controller.AppController;
 import com.aigame.Maps.Maps;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class PlayAsGuest extends Play {
     private Maps maps;
@@ -20,6 +22,7 @@ public class PlayAsGuest extends Play {
     private BorderPane view;
     private int health = 300;
     private GridPane board = new GridPane();
+    Rectangle healthBar;
 
     public PlayAsGuest(AppController appController) {
         super.appController = appController;
@@ -37,10 +40,15 @@ public class PlayAsGuest extends Play {
         drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
         view.setLeft(board);
 
+        
         HBox directionBox = getDirection();
         Button shooButton = shootButton();
         VBox controlVBox = new VBox();
-        controlVBox.getChildren().addAll(directionBox, shooButton);
+
+        HBox healthBox=getHealth();
+        HBox backBox=backButton();
+
+        controlVBox.getChildren().addAll(backBox,healthBox,directionBox, shooButton);
 
         controlVBox.setAlignment(Pos.CENTER);
         directionBox.setPadding(new Insets(50));
@@ -74,18 +82,22 @@ public class PlayAsGuest extends Play {
             case "UP":
                 newRow--;
                 health -= 10;
+                takeDamage(healthBar,health);
                 break;
             case "DOWN":
                 newRow++;
                 health -= 10;
+                takeDamage(healthBar,health);
                 break;
             case "LEFT":
                 newCol--;
                 health -= 10;
+                takeDamage(healthBar,health);
                 break;
             case "RIGHT":
                 newCol++;
                 health -= 10;
+                takeDamage(healthBar,health);
                 break;
             default:
                 return;
@@ -138,13 +150,15 @@ public class PlayAsGuest extends Play {
         Button shoot = new Button("Shoot->");
         shoot.setPrefSize(100, 60);
         shoot.setOnAction(e -> {
-            if (health > 10) {
+            if (health > 30) {
                 int[] arr=shoot();
                 if(arr!=null){
                     health-=30;
+                    takeDamage(healthBar,health);
                     int shootrow=arr[0];int shootcol=arr[1];
                     if(isInBounds(shootrow, shootcol)){
                         if(finalmap[shootrow][shootcol].equals("W")){
+                            map[shootrow][shootcol]="";
                             killWumpus(finalmap,shootrow,shootcol);
                             sound("/Audio/WumpusDieingSound.mp3");
                             drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
@@ -152,13 +166,36 @@ public class PlayAsGuest extends Play {
                     }
                 }
             } else
-                showMessage("Your health is less than 10 Cannot shoot Arrow", AlertType.WARNING);
+                showMessage("Your health is less than 30 Cannot shoot Arrow", AlertType.WARNING);
         });
         return shoot;
     }
 
     public BorderPane getView() {
         return view;
+    }
+    private HBox getHealth(){
+
+        Rectangle healthBar = new Rectangle(health, 30, Color.RED);
+        healthBar.setArcWidth(15);
+        healthBar.setX(50);
+        healthBar.setY(50);
+        this.healthBar=healthBar;
+    
+        Label healthLabel=new Label("Agents health:");
+
+        HBox healtHBox=new HBox(20,healthLabel,healthBar);
+        healtHBox.setPadding(new Insets(0,0,60,40));
+        return healtHBox;
+    }
+
+    private HBox backButton(){
+        Button backButton=new Button("Back");
+        backButton.setOnAction(e->{appController.navigateToHomePage();mediaPlayer.stop();});
+        HBox backBox=new HBox(50,backButton);
+        backBox.setPadding(new Insets(0,50,300,100));
+        backBox.setAlignment(Pos.TOP_RIGHT);
+        return backBox;
     }
 
 }

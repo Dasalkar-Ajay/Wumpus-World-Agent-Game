@@ -49,10 +49,11 @@ public class AppController extends Application {
             System.err.println("Audio file not found!");
             return;
         }
+        
         Media media = new Media(resource.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); 
-        // mediaPlayer.play();
+        mediaPlayer.play();
 
         //---------------------------------------------------------------
         // ADDing Audio in Game
@@ -66,7 +67,7 @@ public class AppController extends Application {
         playAsGuestScene=new Scene(playAsGuest.getView(),1300,750);
 
         primaryStage.setTitle("Wumpus World Agent Game");
-        primaryStage.setScene(playAsGuestScene);
+        primaryStage.setScene(homePageScene);
         primaryStage.show();
     }
      public void controllSetting(String value){
@@ -100,6 +101,10 @@ public class AppController extends Application {
     public void navigateToLobbyPage(String id, SqlQueryPerformer sqlQueryPerformer) {
          lobbyPageScene=new Scene(lobbyPage.getView(id,sqlQueryPerformer),1300,750);
         primaryStage.setScene(lobbyPageScene);
+    }
+
+    public void navigateToPlayAsGuest(){
+        primaryStage.setScene(playAsGuestScene);
     }
 
     public void navigateToPlayPage() {

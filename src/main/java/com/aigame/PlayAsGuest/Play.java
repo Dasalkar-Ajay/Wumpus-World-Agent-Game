@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.Optional;
 
 import com.aigame.Controller.AppController;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -17,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.shape.Rectangle;
 
 
 public class Play {
@@ -114,9 +114,7 @@ public class Play {
             throw new RuntimeException(exception.getMessage()+"In the Play.java sound function");
         }
     }
-    public void win(){
-       
-    }
+
     public boolean playingWill(){
         Alert alert=new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Congratulatins!");
@@ -151,6 +149,7 @@ public class Play {
             }
             return result.get()==cancle?null:arr;
     }
+
     public final void killWumpus(String[][] finalmap,int row,int col){
         finalmap[row][col]="";
         int [][] arr=new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
@@ -162,8 +161,10 @@ public class Play {
             }
         }
     }
-    public final void healthBar(){
-        
+
+    public final void takeDamage(Rectangle healthBar,int currentHealth) {
+        double width = (double) currentHealth / 300 * 300;
+        healthBar.setWidth(width);
     }
 }
 

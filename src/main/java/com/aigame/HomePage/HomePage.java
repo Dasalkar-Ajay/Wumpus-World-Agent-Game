@@ -128,6 +128,7 @@ public class HomePage {
                                 "-fx-background-color: darkred;" +
                                                 "-fx-text-fill: white;" +
                                                 "-fx-font-size: 14px;");
+                playAsGuestButton.setOnAction(e->{appController.navigateToPlayAsGuest();});
 
                 // Left VBox with About Us and Help
                 VBox leftVBox = new VBox(50, aboutUsButton, helpButton);
