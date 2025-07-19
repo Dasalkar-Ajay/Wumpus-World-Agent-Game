@@ -139,16 +139,31 @@ public class Play {
             ButtonType cancle=new ButtonType("Cancle");
             alert.getButtonTypes().setAll(up,down,left,right,cancle);
             Optional<ButtonType> result=alert.showAndWait();
+            int arr[]=new int[]{agentRow,agentCol};
             if(result.get()==up){
-
+                arr[0]-=1;
             }else if(result.get()==down){
-
+                arr[0]+=1;
             }else if(result.get()==left){
-
+                arr[1]-=1;
             }else if(result.get()==right){
-                
+                arr[1]+=1;
             }
-            return null;
+            return result.get()==cancle?null:arr;
+    }
+    public final void killWumpus(String[][] finalmap,int row,int col){
+        finalmap[row][col]="";
+        int [][] arr=new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
+        for(int i=0;i<4;i++){
+            int x=row+arr[i][0];int y=col+arr[i][1];
+            if(isInBounds(x,y)){
+                if(finalmap[x][y].equals("S"))finalmap[x][y]="";
+                else if(finalmap[x][y].equals("BS"))finalmap[x][y]="B";
+            }
+        }
+    }
+    public final void healthBar(){
+        
     }
 }
 
