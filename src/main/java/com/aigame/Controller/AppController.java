@@ -9,6 +9,7 @@ import com.aigame.HomePage.HomePage;
 import com.aigame.Login_SignUp.LoginPage;
 import com.aigame.Login_SignUp.SignUpPage;
 import com.aigame.PlayAsGuest.PlayAsGuest;
+import com.aigame.PlayAsGuest.PlayPage;
 import com.aigame.SqlHandling.SqlQueryPerformer;
 
 import javafx.application.Application;
@@ -29,9 +30,10 @@ public class AppController extends Application {
     private SignUpPage signUpPage;
     private LobbyPage lobbyPage;
     private PlayAsGuest playAsGuest;
+    private PlayPage playPage;
 
     //These are the Scenes of classes
-    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,playAsGuestScene;
+    private Scene homePageScene, aboutUsPageScene,helpPageScene,loginPageScene,signUpPageScene,lobbyPageScene,playAsGuestScene,playPageScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -43,6 +45,7 @@ public class AppController extends Application {
         signUpPage=new SignUpPage(this);
         lobbyPage=new LobbyPage(this);
         playAsGuest=new PlayAsGuest(this);
+        playPage=new PlayPage(this);
         
         URL resource = getClass().getResource("/Audio/scary(chosic.com).mp3");
         if (resource == null) {
@@ -100,8 +103,8 @@ public class AppController extends Application {
         primaryStage.setScene(playAsGuestScene);
     }
 
-    public void navigateToPlayPage() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'navigateToPlayPage'");
+    public void navigateToPlayPage(int leveltoPlay,String id,SqlQueryPerformer sqlQueryPerformer) {
+       playPageScene=new Scene(playPage.getView(leveltoPlay,id,sqlQueryPerformer));
+       primaryStage.setScene(playPageScene);
     }
 }

@@ -38,9 +38,9 @@ public class ProfileSetting {
         delay.play();
     }
 
-    public static void  getSetting(AppController appController){
-          Stage primaryStage = new Stage();
-       Label Music=new Label("Music");
+    public static void  getSetting(AppController appController,LobbyPage lobbyPage){
+        Stage primaryStage = new Stage();
+        Label Music=new Label("Music");
         Button stopButton=new Button("Stop");
         stopButton.setOnAction(e->{appController.mediaPlayer.stop();});
 
@@ -51,7 +51,20 @@ public class ProfileSetting {
         HBox buttonBox=new HBox(30,stopButton,playButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox settingBox = new VBox(20,Music,buttonBox );
+        Label labelLevel=new Label("Set the Level You Want to play::");
+        Button easyButton=new Button("Easy");
+        easyButton.setOnAction(e->{lobbyPage.setLevel(0);});
+
+        Button mediumButton=new Button("Medium");
+        mediumButton.setOnAction(e->{lobbyPage.setLevel(1);});
+
+        Button hardButton=new Button("Hard");
+        hardButton.setOnAction(e->{lobbyPage.setLevel(2);});
+
+        HBox levelBox=new HBox(easyButton,mediumButton,hardButton);
+        levelBox.setAlignment(Pos.CENTER);
+
+        VBox settingBox = new VBox(20,Music,buttonBox ,labelLevel,levelBox);
         settingBox.setAlignment(Pos.CENTER);
         settingBox.setStyle("-fx-background-color: lightblue;"); 
 

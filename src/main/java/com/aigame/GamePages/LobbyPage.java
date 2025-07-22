@@ -31,6 +31,7 @@ public class LobbyPage {
     private int avtarcount, totalPlay, total_win, total_loss, avtar_unlocked, avtar_inUse;
     private float money;
     private String name,phone;
+    private int levelPlay=3;
 
     public LobbyPage(AppController appController) {
         this.appController = appController;
@@ -112,7 +113,7 @@ public class LobbyPage {
         Button settingButton = new Button();
         settingButton.setGraphic(settinImageView);
         settingButton.setOnAction((ActionEvent e) -> {
-            ProfileSetting.getSetting(appController);
+            ProfileSetting.getSetting(appController,this);
         });
 
         Button playButton = new Button("Play");
@@ -126,7 +127,7 @@ public class LobbyPage {
                         "-fx-padding: 5 15 5 15;" +
                         "-fx-alignment: CENTER;");
         playButton.setOnAction((ActionEvent e) -> {
-         appController.navigateToPlayPage();
+         appController.navigateToPlayPage(levelPlay,phone,sqlQueryPerformer);
         });
 
         VBox profilesettingBox = new VBox(30, profileButton, settingButton);
@@ -152,7 +153,7 @@ public class LobbyPage {
                 "-fx-border-color: white;" +
                 "-fx-border-radius: 10;" +
                 "-fx-border-width: 2px;" +
-                "-fx-text-fill: golden;");
+                "-fx-text-fill: gold;");
 
         avtarcount = 0;
         ImageView imageView = new ImageView();
@@ -261,5 +262,9 @@ public class LobbyPage {
         avtarBox.setPadding(new Insets(20));
 
         return avtarBox;
+    }
+
+    public void setLevel(int level) {
+        levelPlay=level;
     }
 }
