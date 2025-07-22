@@ -42,23 +42,10 @@ public class ProfileSetting {
           Stage primaryStage = new Stage();
        Label Music=new Label("Music");
         Button stopButton=new Button("Stop");
-        stopButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                appController.controllSetting("stop");
-            }
-            
-        });
+        stopButton.setOnAction(e->{appController.mediaPlayer.stop();});
 
         Button playButton=new Button("play");
-        playButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                appController.controllSetting("play");
-            }
-        });
+        playButton.setOnAction(e->{appController.mediaPlayer.play();});
 
 
         HBox buttonBox=new HBox(30,stopButton,playButton);

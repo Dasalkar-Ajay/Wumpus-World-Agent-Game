@@ -70,13 +70,6 @@ public class AppController extends Application {
         primaryStage.setScene(homePageScene);
         primaryStage.show();
     }
-     public void controllSetting(String value){
-        if(value.equals("stop")){
-            mediaPlayer.stop();
-        }else{
-            mediaPlayer.play();
-        }
-    }
 
     public void navigateToHomePage(){
         primaryStage.setScene(homePageScene);
