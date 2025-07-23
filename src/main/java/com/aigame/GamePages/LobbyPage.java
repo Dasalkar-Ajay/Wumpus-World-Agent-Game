@@ -127,7 +127,7 @@ public class LobbyPage {
                         "-fx-padding: 5 15 5 15;" +
                         "-fx-alignment: CENTER;");
         playButton.setOnAction((ActionEvent e) -> {
-         appController.navigateToPlayPage(levelPlay,phone,sqlQueryPerformer);
+         appController.navigateToPlayPage(levelPlay,avtar_inUse,phone,sqlQueryPerformer);
         });
 
         VBox profilesettingBox = new VBox(30, profileButton, settingButton);

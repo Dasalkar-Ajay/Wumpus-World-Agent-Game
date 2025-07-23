@@ -21,7 +21,7 @@ public class PlayPage extends Play {
     private Maps maps;
     private int leveltoPlay;
     private SqlQueryPerformer sqlQueryPerformer;
-    private String playerId;
+    private String playerId, avtar_inUse;
     private String[][] finalmap;
     private String[][] map = new String[SIZE][SIZE];
     private BorderPane view;
@@ -33,28 +33,26 @@ public class PlayPage extends Play {
         super.appController = appController;
         super.mediaPlayer = appController.mediaPlayer;
         maps = new Maps();
-        finalmap = maps.getmap(3);
-        for (int r = 0; r < SIZE; r++) {
-            System.arraycopy(finalmap[r], 0, map[r], 0, SIZE);
-        }
-        initialize();
     }
 
     private void initialize() {
+        finalmap = maps.getmap(leveltoPlay);
+        for (int r = 0; r < SIZE; r++) {
+            System.arraycopy(finalmap[r], 0, map[r], 0, SIZE);
+        }
+
         view = new BorderPane();
-        drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
+        drawBoard(board, map, finalmap, avtar_inUse);
         view.setLeft(board);
 
-        
         HBox directionBox = getDirection();
         Button shooButton = shootButton();
         VBox controlVBox = new VBox();
 
-        HBox healthBox=getHealth();
-        HBox backBox=backButton();
+        HBox healthBox = getHealth();
+        HBox backBox = backButton();
 
-        controlVBox.getChildren().addAll(backBox,healthBox,directionBox, shooButton);
-
+        controlVBox.getChildren().addAll(backBox, healthBox, directionBox, shooButton);
         controlVBox.setAlignment(Pos.CENTER);
         directionBox.setPadding(new Insets(50));
         view.setRight(controlVBox);
@@ -84,29 +82,15 @@ public class PlayPage extends Play {
         int newCol = agentCol;
 
         switch (string) {
-            case "UP":
-                newRow--;
-                health -= 10;
-                takeDamage(healthBar,health);
-                break;
-            case "DOWN":
-                newRow++;
-                health -= 10;
-                takeDamage(healthBar,health);
-                break;
-            case "LEFT":
-                newCol--;
-                health -= 10;
-                takeDamage(healthBar,health);
-                break;
-            case "RIGHT":
-                newCol++;
-                health -= 10;
-                takeDamage(healthBar,health);
-                break;
-            default:
-                return;
+            case "UP": newRow--; break;
+            case "DOWN": newRow++; break;
+            case "LEFT": newCol--; break;
+            case "RIGHT": newCol++; break;
+            default: return;
         }
+
+        health -= 10;
+        takeDamage(healthBar, health);
 
         if (isInBounds(newRow, newCol)) {
             String destination = map[newRow][newCol];
@@ -124,14 +108,15 @@ public class PlayPage extends Play {
             } else if (destination.equals("G")) {
                 if (playingWill()) {
                     resetGame();
-                } else
+                } else {
                     appController.navigateToHomePage();
+                }
             } else {
                 map[agentRow][agentCol] = ".";
                 agentRow = newRow;
                 agentCol = newCol;
                 map[agentRow][agentCol] = "A";
-                drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
+                drawBoard(board, map, finalmap, avtar_inUse);
             }
         } else {
             sound("/Audio/wallbump.mp3");
@@ -141,14 +126,14 @@ public class PlayPage extends Play {
     }
 
     private void resetGame() {
-        finalmap = maps.getmap(3);
+        finalmap = maps.getmap(leveltoPlay);
         for (int r = 0; r < SIZE; r++) {
             System.arraycopy(finalmap[r], 0, map[r], 0, SIZE);
         }
         agentRow = 4;
         agentCol = 0;
         health = 300;
-        drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
+        drawBoard(board, map, finalmap, avtar_inUse);
     }
 
     private Button shootButton() {
@@ -156,54 +141,62 @@ public class PlayPage extends Play {
         shoot.setPrefSize(100, 60);
         shoot.setOnAction(e -> {
             if (health > 30) {
-                int[] arr=shoot();
-                if(arr!=null){
-                    health-=30;
-                    takeDamage(healthBar,health);
-                    int shootrow=arr[0];int shootcol=arr[1];
-                    if(isInBounds(shootrow, shootcol)){
-                        if(finalmap[shootrow][shootcol].equals("W")){
-                            map[shootrow][shootcol]="";
-                            killWumpus(finalmap,shootrow,shootcol);
+                int[] arr = shoot();
+                if (arr != null) {
+                    health -= 30;
+                    takeDamage(healthBar, health);
+                    int shootrow = arr[0], shootcol = arr[1];
+                    if (isInBounds(shootrow, shootcol)) {
+                        if (finalmap[shootrow][shootcol].equals("W")) {
+                            map[shootrow][shootcol] = "";
+                            killWumpus(finalmap, shootrow, shootcol);
                             sound("/Audio/WumpusDieingSound.mp3");
-                            drawBoard(board, map, finalmap, "/Images/Avtar/Avtarno0.jpg");
+                            drawBoard(board, map, finalmap, avtar_inUse);
                         }
                     }
                 }
-            } else
+            } else {
                 showMessage("Your health is less than 30 Cannot shoot Arrow", AlertType.WARNING);
+            }
         });
         return shoot;
     }
 
-    public BorderPane getView(int leveltoPlay,String playerId, SqlQueryPerformer sqlQueryPerformer) {
-        this.leveltoPlay=leveltoPlay;
-        this.sqlQueryPerformer=sqlQueryPerformer;
-        this.playerId=playerId;
+    public BorderPane getView(int leveltoPlay, int avtar_inUse, String playerId, SqlQueryPerformer sqlQueryPerformer) {
+        this.leveltoPlay = leveltoPlay;
+        this.sqlQueryPerformer = sqlQueryPerformer;
+        this.avtar_inUse = "/Images/Avtar/Avtarno" + avtar_inUse + ".jpg";
+        this.playerId = playerId;
+
+        // Initialize only after avatar and other values are set
+        initialize();
+
         return view;
     }
-    private HBox getHealth(){
 
+    private HBox getHealth() {
         Rectangle healthBar = new Rectangle(health, 30, Color.RED);
         healthBar.setArcWidth(15);
         healthBar.setX(50);
         healthBar.setY(50);
-        this.healthBar=healthBar;
-    
-        Label healthLabel=new Label("Agents health:");
+        this.healthBar = healthBar;
 
-        HBox healtHBox=new HBox(20,healthLabel,healthBar);
-        healtHBox.setPadding(new Insets(0,0,60,40));
+        Label healthLabel = new Label("Agents health:");
+        HBox healtHBox = new HBox(20, healthLabel, healthBar);
+        healtHBox.setPadding(new Insets(0, 0, 60, 40));
         return healtHBox;
     }
 
-    private HBox backButton(){
-        Button backButton=new Button("Back");
-        backButton.setOnAction(e->{appController.navigateToHomePage();mediaPlayer.stop();});
-        HBox backBox=new HBox(50,backButton);
-        backBox.setPadding(new Insets(0,50,300,100));
+    private HBox backButton() {
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            appController.navigateToHomePage();
+            mediaPlayer.stop();
+        });
+
+        HBox backBox = new HBox(50, backButton);
+        backBox.setPadding(new Insets(0, 50, 300, 100));
         backBox.setAlignment(Pos.TOP_RIGHT);
         return backBox;
     }
-
 }
