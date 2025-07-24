@@ -1,6 +1,7 @@
 package com.aigame.SqlHandling;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -109,4 +110,41 @@ public class SqlQueryPerformer {
         System.out.println("error in getBuy SqlQueryPerformer");
     }
    }
+
+  public void won(String playerId, int health) {
+    ResultSet resultSet = getPlayerData(playerId);
+
+    try {
+        if (resultSet.next()) { 
+            float money = resultSet.getFloat("money");
+            int won = resultSet.getInt("total_win") + 1;
+            money += (health + 1000);
+
+            String query = "UPDATE avtar SET money = ?, total_win = ? WHERE phone = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setFloat(1, money);
+            preparedStatement.setInt(2, won);
+            preparedStatement.setString(3, playerId);
+            int rows = preparedStatement.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Player data updated successfully.");
+            } else {
+                System.out.println("No player found with phone: " + playerId);
+            }
+
+            preparedStatement.close();
+        } else {
+            System.out.println("No result found for playerId: " + playerId);
+        }
+
+        resultSet.close();
+
+    } catch (SQLException sqlException) {
+        System.out.println("The exception in the won SqlQueryPerformer: won() method");
+        sqlException.printStackTrace(); 
+    }
+}
+
 }

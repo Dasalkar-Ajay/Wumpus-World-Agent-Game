@@ -106,6 +106,7 @@ public class PlayPage extends Play {
                 showMessage("Wumpus ate you! Game Over.", Alert.AlertType.ERROR);
                 resetGame();
             } else if (destination.equals("G")) {
+                sqlQueryPerformer.won(playerId,health);
                 if (playingWill()) {
                     resetGame();
                 } else {
@@ -168,7 +169,7 @@ public class PlayPage extends Play {
         this.avtar_inUse = "/Images/Avtar/Avtarno" + avtar_inUse + ".jpg";
         this.playerId = playerId;
 
-        // Initialize only after avatar and other values are set
+
         initialize();
 
         return view;
