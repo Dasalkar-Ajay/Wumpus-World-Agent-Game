@@ -7,6 +7,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -42,17 +44,28 @@ public class PlayAsGuest extends Play {
 
         
         HBox directionBox = getDirection();
+        VBox controlVBox = new VBox(10);
         Button shooButton = shootButton();
-        VBox controlVBox = new VBox();
+        Button helpButton=helpButton();
 
         HBox healthBox=getHealth();
         HBox backBox=backButton();
 
-        controlVBox.getChildren().addAll(backBox,healthBox,directionBox, shooButton);
+        controlVBox.getChildren().addAll(backBox,healthBox,directionBox, shooButton,helpButton);
 
         controlVBox.setAlignment(Pos.CENTER);
         directionBox.setPadding(new Insets(50));
         view.setRight(controlVBox);
+    }
+
+    private Button helpButton() {
+          Image helpImage = new Image("/Images/PlayPageImage/IdeaImage.png");
+        ImageView helpImageView = new ImageView(helpImage);
+        helpImageView.setFitHeight(50);
+        helpImageView.setFitWidth(50);
+        Button helpButton=new Button("",helpImageView);
+        helpButton.setOnAction(e->{help(map);});
+        return helpButton;
     }
 
     private HBox getDirection() {

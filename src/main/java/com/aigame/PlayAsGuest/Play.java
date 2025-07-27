@@ -1,9 +1,11 @@
 package com.aigame.PlayAsGuest;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.Optional;
-
+import java.util.Queue;
 import com.aigame.Controller.AppController;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -165,6 +167,57 @@ public class Play {
     public final void takeDamage(Rectangle healthBar,int currentHealth) {
         double width = (double) currentHealth / 300 * 300;
         healthBar.setWidth(width);
+    }
+
+    public void help(String[] [] map){
+        int move[][]=new int[][]{{1,0},{-1,0},{0,1},{0,-1}};
+        int min=Integer.MAX_VALUE;int index=0;
+        for(int i=0;i<4;i++){
+           int x= getTravel(agentRow+move[i][0], agentCol+move[i][1],move,map);
+           if(x<=min){
+            min=x;index=i;
+           }
+        }
+        getDirection(index);
+    }
+
+    public int getTravel(int row,int col,int[][]move,String[][] map){
+        if(!isInBounds(row, col))return Integer.MAX_VALUE;
+        int result=0;
+        Queue<int[]> queue=new LinkedList<>();
+        queue.add(new int[]{row,col,agentRow,agentCol});
+        int size=queue.size();
+        while (!queue.isEmpty()) {
+            result++;
+            for(int i=0;i<size;i++){
+                int []arr=queue.poll();
+                int currentrow=arr[0];int currentcolumn=arr[1];int parentrow=arr[2];int parentcol=arr[3];
+                if(map[currentrow][currentcolumn].equals("G"))return result;
+            
+                for(int val[]:move){
+                    int r=currentrow+val[0];int c=currentcolumn+val[1];
+                    if(!isInBounds(r, c)||map[r][c].equals("S") ||map[r][c].equals("B"))continue;
+                    if(r!=parentrow && c!=parentcol && isInBounds(r, c)){
+                        queue.add(new int[]{r,c,currentrow,currentcolumn});
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public final void getDirection(int x){
+        switch (x) {
+            case 0:
+                showMessage("Dowm ↓ ",AlertType.INFORMATION); return ;
+            case 1: 
+                showMessage("Up  ↑",AlertType.INFORMATION);return ;
+             case 2: 
+             showMessage("Right  →",AlertType.INFORMATION);return ;
+             case 3: 
+             showMessage("Left  ←",AlertType.INFORMATION);return ;
+        }
     }
 }
 

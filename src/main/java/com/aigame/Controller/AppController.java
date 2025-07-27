@@ -104,7 +104,7 @@ public class AppController extends Application {
     }
 
     public void navigateToPlayPage(int leveltoPlay,int avtar_inUse,String id,SqlQueryPerformer sqlQueryPerformer) {
-       playPageScene=new Scene(playPage.getView(leveltoPlay,avtar_inUse,id,sqlQueryPerformer));
+       playPageScene=new Scene(playPage.getView(leveltoPlay,avtar_inUse,id,sqlQueryPerformer),1300,750);
        primaryStage.setScene(playPageScene);
     }
 }

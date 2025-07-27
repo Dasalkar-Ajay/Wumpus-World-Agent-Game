@@ -115,7 +115,7 @@ public class SqlQueryPerformer {
     ResultSet resultSet = getPlayerData(playerId);
 
     try {
-        if (resultSet.next()) { 
+        if (resultSet.next()) {  
             float money = resultSet.getFloat("money");
             int won = resultSet.getInt("total_win") + 1;
             money += (health + 1000);
