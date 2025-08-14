@@ -5,219 +5,198 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
 import com.aigame.Controller.AppController;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 
-
 public class Play {
-    public final int SIZE = 5;
-    public final int CELL_SIZE = 120;
-    public int agentRow = 4;
-    public int agentCol = 0;
+    public static final int SIZE = 5;
+    public static final int CELL_SIZE = 120;
+    public int agentRow = 4, agentCol = 0;
     public AppController appController;
     public MediaPlayer mediaPlayer;
 
-    public final String getColor(String cell) {
-        switch (cell) {
-            case "S":
-                return "#0b6710ff";
-            case "B":
-                return "#194591ff";
-            case "BS":
-                return "#1b797eff";
-            case "G":
-                return "#ecb532ff";
-            default:
-                return "#a4cff2ff";
-        }
-    }
+    private static final int[][] MOVES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-    public final boolean isInBounds(int row, int col) {
+    // ========== Utility ==========
+    public boolean isInBounds(int row, int col) {
         return row >= 0 && row < SIZE && col >= 0 && col < SIZE;
     }
 
-    public final void showMessage(String msg, Alert.AlertType type) {
-        Alert alert = new Alert(type);
+    public void showMessage(String msg, Alert.AlertType type) {
+        Alert alert = new Alert(type, msg);
         alert.setTitle("Wumpus Game");
         alert.setHeaderText(null);
-        alert.setContentText(msg);
         alert.showAndWait();
     }
 
-    public final void drawBoard(GridPane board, String[][] map, String[][] finalmap, String imageUrl) {
+    // ========== Board Rendering ==========
+    public void drawBoard(GridPane board, String[][] map, String[][] finalMap, String imageUrl) {
         board.getChildren().clear();
         board.setAlignment(Pos.CENTER);
         board.setGridLinesVisible(true);
+        board.setPadding(new Insets(20));
 
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
-                if (map[row][col].equals("A")) {
-                    Image image = new Image(imageUrl);
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitHeight(80);
-                    imageView.setFitWidth(80);
-                    StackPane stackPane = new StackPane();
-                    stackPane.setPrefSize(CELL_SIZE, CELL_SIZE);
-                    stackPane.setStyle(
-                            "-fx-border-color: black; -fx-background-color: " + getColor(finalmap[agentRow][agentCol]));
-                    setAgentbackgroundSound(finalmap);
-                    stackPane.getChildren().add(imageView);
-                    board.add(stackPane, col, row);
+                StackPane cell = new StackPane();
+                cell.setPrefSize(CELL_SIZE, CELL_SIZE);
+
+                if ("A".equals(map[row][col])) {
+                    ImageView agentImage = new ImageView(new Image(imageUrl));
+                    agentImage.setFitHeight(80);
+                    agentImage.setFitWidth(80);
+                    cell.setStyle("-fx-border-color: black; -fx-background-color: " + getColor(finalMap[agentRow][agentCol]));
+                    setAgentBackgroundSound(finalMap);
+                    cell.getChildren().add(agentImage);
                 } else {
-                    Label label = new Label("");
-                    label.setPrefSize(CELL_SIZE, CELL_SIZE);
-                    label.setAlignment(Pos.CENTER);
-                    label.setStyle("-fx-border-color: black; -fx-background-color: " + "#fefae0");
-                    board.add(label, col, row);
+                    cell.setStyle("-fx-border-color: black; -fx-background-color: #fefae0");
                 }
-                board.setPadding(new Insets(20));
+
+                board.add(cell, col, row);
             }
         }
     }
 
-    private void setAgentbackgroundSound(String[][] finalmap) {
-        String back=finalmap[agentRow][agentCol];
-        switch (back) {
-            case "S":
-                sound("/Audio/WumpusSound.mp3");
-                break;
-            case "B":
-                 sound("/Audio/breeze.mp3");
-                break;
-            case "BS":
-                 sound("/Audio/WumpusSound.mp3");
-                break;
+    private String getColor(String cell) {
+        switch (cell) {
+            case "S": return "#0b6710ff";  // Stench
+            case "B": return "#194591ff";  // Breeze
+            case "BS": return "#1b797eff"; // Both
+            case "G": return "#ecb532ff";  // Gold
+            default: return "#a4cff2ff";   // Default
         }
     }
 
-    public final void sound(String url) {
+    private void setAgentBackgroundSound(String[][] map) {
+        switch (map[agentRow][agentCol]) {
+            case "S": case "BS": sound("/Audio/WumpusSound.mp3"); break;
+            case "B": sound("/Audio/breeze.mp3"); break;
+        }
+    }
+
+    // ========== Audio ==========
+    public void sound(String url) {
         URL resource = getClass().getResource(url);
         if (resource == null) {
             System.err.println("Audio file not found!");
             return;
         }
-        try{
+        try {
             Media media = new Media(resource.toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.play();
-        }catch(Exception exception){
-            throw new RuntimeException(exception.getMessage()+"In the Play.java sound function");
+        } catch (Exception e) {
+            throw new RuntimeException("Sound error: " + e.getMessage());
         }
     }
 
-    public boolean playingWill(){
-        Alert alert=new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Congratulatins!");
-        alert.setHeaderText("Did you want to play agian");
-        alert.setContentText("wanted to continue press Ok");
-        if(alert.showAndWait().get()==ButtonType.OK){
-            return true;
-        }
-        return false;
+    // ========== Game Events ==========
+    public boolean playingWill() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Congratulations!");
+        alert.setHeaderText("Do you want to play again?");
+        alert.setContentText("Press OK to continue.");
+        return alert.showAndWait().filter(btn -> btn == ButtonType.OK).isPresent();
     }
 
-    public int[] shoot(){
-            Alert alert=new Alert(AlertType.CONFIRMATION);
-            alert.setHeaderText("Choose Direction!");
-            alert.setContentText("Conferm where have to shoot:");
-            ButtonType up=new ButtonType("↑");
-            ButtonType down=new ButtonType("↓");
-            ButtonType left=new ButtonType("←");
-            ButtonType right=new ButtonType("→");
-            ButtonType cancle=new ButtonType("Cancle");
-            alert.getButtonTypes().setAll(up,down,left,right,cancle);
-            Optional<ButtonType> result=alert.showAndWait();
-            int arr[]=new int[]{agentRow,agentCol};
-            if(result.get()==up){
-                arr[0]-=1;
-            }else if(result.get()==down){
-                arr[0]+=1;
-            }else if(result.get()==left){
-                arr[1]-=1;
-            }else if(result.get()==right){
-                arr[1]+=1;
-            }
-            return result.get()==cancle?null:arr;
+    public int[] shoot() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Choose Direction to Shoot:");
+        ButtonType up = new ButtonType("↑");
+        ButtonType down = new ButtonType("↓");
+        ButtonType left = new ButtonType("←");
+        ButtonType right = new ButtonType("→");
+        ButtonType cancel = new ButtonType("Cancel");
+        alert.getButtonTypes().setAll(up, down, left, right, cancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (!result.isPresent() || result.get() == cancel) return null;
+
+        int[] pos = {agentRow, agentCol};
+        if (result.get() == up) pos[0]--;
+        else if (result.get() == down) pos[0]++;
+        else if (result.get() == left) pos[1]--;
+        else if (result.get() == right) pos[1]++;
+
+        return pos;
     }
 
-    public final void killWumpus(String[][] finalmap,int row,int col){
-        finalmap[row][col]="";
-        int [][] arr=new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
-        for(int i=0;i<4;i++){
-            int x=row+arr[i][0];int y=col+arr[i][1];
-            if(isInBounds(x,y)){
-                if(finalmap[x][y].equals("S"))finalmap[x][y]="";
-                else if(finalmap[x][y].equals("BS"))finalmap[x][y]="B";
+    public void killWumpus(String[][] map, int row, int col) {
+        map[row][col] = "";
+        for (int[] dir : MOVES) {
+            int r = row + dir[0], c = col + dir[1];
+            if (isInBounds(r, c)) {
+                if ("S".equals(map[r][c])) map[r][c] = "";
+                else if ("BS".equals(map[r][c])) map[r][c] = "B";
             }
         }
     }
 
-    public final void takeDamage(Rectangle healthBar,int currentHealth) {
-        double width = (double) currentHealth / 300 * 300;
-        healthBar.setWidth(width);
+    public void takeDamage(Rectangle healthBar, int currentHealth) {
+        healthBar.setWidth(currentHealth);
     }
 
-    public void help(String[] [] map){
-        int move[][]=new int[][]{{1,0},{-1,0},{0,1},{0,-1}};
-        int min=Integer.MAX_VALUE;int index=0;
-        for(int i=0;i<4;i++){
-           int x= getTravel(agentRow+move[i][0], agentCol+move[i][1],move,map);
-           if(x<=min){
-            min=x;index=i;
-           }
+    // ========== Hint System ==========
+    public void help(String[][] map) {
+        int minSteps = Integer.MAX_VALUE;
+        int bestDir = -1;
+
+        for (int i = 0; i < MOVES.length; i++) {
+            int newRow = agentRow + MOVES[i][0];
+            int newCol = agentCol + MOVES[i][1];
+            int steps = getTravel(newRow, newCol, map);
+            if (steps < minSteps) {
+                minSteps = steps;
+                bestDir = i;
+            }
         }
-        getDirection(index);
+
+        getDirection(bestDir);
     }
 
-    public int getTravel(int row,int col,int[][]move,String[][] map){
-        if(!isInBounds(row, col))return Integer.MAX_VALUE;
-        int result=0;
-        Queue<int[]> queue=new LinkedList<>();
-        queue.add(new int[]{row,col,agentRow,agentCol});
-        int size=queue.size();
+    private int getTravel(int row, int col, String[][] map) {
+        if (!isInBounds(row, col)) return Integer.MAX_VALUE;
+        if(map[row][col].equals("W")|| map[row][col].equals("P"))return Integer.MAX_VALUE;
+
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[SIZE][SIZE];
+        queue.add(new int[]{row, col});
+        visited[row][col] = true;
+        int depth = 0;
+
         while (!queue.isEmpty()) {
-            result++;
-            for(int i=0;i<size;i++){
-                int []arr=queue.poll();
-                int currentrow=arr[0];int currentcolumn=arr[1];int parentrow=arr[2];int parentcol=arr[3];
-                if(map[currentrow][currentcolumn].equals("G"))return result;
-            
-                for(int val[]:move){
-                    int r=currentrow+val[0];int c=currentcolumn+val[1];
-                    if(!isInBounds(r, c)||map[r][c].equals("S") ||map[r][c].equals("B"))continue;
-                    if(r!=parentrow && c!=parentcol && isInBounds(r, c)){
-                        queue.add(new int[]{r,c,currentrow,currentcolumn});
+            int size = queue.size();
+            depth++;
+            for (int i = 0; i < size; i++) {
+                int[] curr = queue.poll();
+                int r = curr[0], c = curr[1];
+
+                if ("G".equals(map[r][c])) return depth;
+
+                for (int[] dir : MOVES) {
+                    int nr = r + dir[0], nc = c + dir[1];
+                    if (isInBounds(nr, nc) && !visited[nr][nc] &&
+                        !"P".equals(map[nr][nc]) && !"W".equals(map[nr][nc])) {
+                        queue.add(new int[]{nr, nc});
+                        visited[nr][nc] = true;
                     }
                 }
             }
         }
-
-        return result;
+        return Integer.MAX_VALUE;
     }
 
-    public final void getDirection(int x){
-        switch (x) {
-            case 0:
-                showMessage("Dowm ↓ ",AlertType.INFORMATION); return ;
-            case 1: 
-                showMessage("Up  ↑",AlertType.INFORMATION);return ;
-             case 2: 
-             showMessage("Right  →",AlertType.INFORMATION);return ;
-             case 3: 
-             showMessage("Left  ←",AlertType.INFORMATION);return ;
+    private void getDirection(int dir) {
+        String[] directions = {"Down ↓", "Up ↑", "Right →", "Left ←"};
+        if (dir >= 0 && dir < directions.length) {
+            showMessage(directions[dir], Alert.AlertType.INFORMATION);
         }
     }
 }
-

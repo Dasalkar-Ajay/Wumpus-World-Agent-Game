@@ -64,7 +64,10 @@ public class PlayAsGuest extends Play {
         helpImageView.setFitHeight(50);
         helpImageView.setFitWidth(50);
         Button helpButton=new Button("",helpImageView);
-        helpButton.setOnAction(e->{help(map);});
+        helpButton.setOnAction(e->{help(map);
+            health-=30;
+         takeDamage(healthBar,health);
+        });
         return helpButton;
     }
 
